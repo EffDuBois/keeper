@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, {
   createContext,
   useContext,
@@ -7,8 +8,8 @@ import React, {
 } from "react";
 import {
   DocumentFileDetail,
+  exists,
   listFiles,
-  openDocument,
   openDocumentTree,
   readFile,
   stat,
@@ -26,6 +27,8 @@ interface FsContextProps {
 
 const FsContext = createContext<FsContextProps | undefined>(undefined);
 
+const ROOT_FOLDER_KEY = "root_path";
+
 export const FsProvider = ({ children }: { children: ReactNode }) => {
   const [rootFolder, setRootFolder] = useState<
     DocumentFileDetail | undefined
@@ -35,9 +38,19 @@ export const FsProvider = ({ children }: { children: ReactNode }) => {
     const getRootFolder = async () => {
       try {
         if (!rootFolder) {
-          const newFolder = await openDocumentTree(true);
-          console.log(newFolder);
-          if (newFolder) setRootFolder(newFolder);
+          const storedFolderUri = await AsyncStorage.getItem(ROOT_FOLDER_KEY);
+          if (storedFolderUri && (await exists(storedFolderUri))) {
+            const storedFolder = await stat(storedFolderUri);
+            if (storedFolder) {
+              setRootFolder(storedFolder);
+            }
+          } else {
+            const newFolder = await openDocumentTree(true);
+            if (newFolder) {
+              setRootFolder(newFolder);
+              AsyncStorage.setItem(ROOT_FOLDER_KEY, newFolder.uri);
+            }
+          }
         }
       } catch (error) {
         console.error(error);
