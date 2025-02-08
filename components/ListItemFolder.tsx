@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-export default function ItemListFolder({ file }: { file: DocumentFileDetail }) {
+export default function ListItemFolder({ file }: { file: DocumentFileDetail }) {
   const Fs = useFs();
 
   const height = useSharedValue(0);
