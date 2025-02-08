@@ -5,6 +5,7 @@ import Theme from "@/utils/themes";
 import { TextStyle, View, ViewStyle } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { cssInterop } from "nativewind";
+import { FsProvider } from "@/utils/Fs/Fs";
 
 interface StackProps extends React.ComponentProps<typeof Stack> {
   headerStyle?: TextStyle;
@@ -28,17 +29,19 @@ export const StyledStack = cssInterop(StackImpl, {
 
 export default function RootLayout() {
   return (
-    <Theme name="default">
-      <StatusBar style="auto" />
-      <View className="flex-1 bg-background">
-        <StyledStack
-          headerClassName="bg-background text-foreground"
-          screenOptions={{
-            headerTitle: "",
-            headerShadowVisible: false,
-          }}
-        />
-      </View>
-    </Theme>
+    <FsProvider>
+      <Theme name="default">
+        <StatusBar style="auto" />
+        <View className="flex-1 bg-background">
+          <StyledStack
+            headerClassName="bg-background text-foreground"
+            screenOptions={{
+              headerTitle: "",
+              headerShadowVisible: false,
+            }}
+          />
+        </View>
+      </Theme>
+    </FsProvider>
   );
 }
