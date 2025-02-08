@@ -7,12 +7,15 @@ import React, {
   ReactNode,
 } from "react";
 import {
+  createFile,
   DocumentFileDetail,
   exists,
   listFiles,
+  mkdir,
   openDocumentTree,
   readFile,
   stat,
+  writeFile,
 } from "react-native-saf-x";
 
 interface FsContextProps {
@@ -23,6 +26,11 @@ interface FsContextProps {
   ) => Promise<DocumentFileDetail[]>;
   getFile: (uri: DocumentFileDetail["uri"]) => Promise<DocumentFileDetail>;
   readFileContent: (uri: DocumentFileDetail["uri"]) => Promise<string>;
+  createEmptyFile: (
+    uri: DocumentFileDetail["uri"]
+  ) => Promise<DocumentFileDetail>;
+  editFile: (uri: DocumentFileDetail["uri"], data: string) => Promise<void>;
+  createFolder: (uri: DocumentFileDetail["uri"]) => Promise<DocumentFileDetail>;
 }
 
 const FsContext = createContext<FsContextProps | undefined>(undefined);
@@ -71,6 +79,11 @@ export const FsProvider = ({ children }: { children: ReactNode }) => {
     return folderFiles;
   };
 
+  const createFolder = async (uri: DocumentFileDetail["uri"]) => {
+    const newFolder = await mkdir(uri);
+    return newFolder;
+  };
+
   const getFile = async (uri: DocumentFileDetail["uri"]) => {
     const file = await stat(uri);
     return file;
@@ -81,6 +94,16 @@ export const FsProvider = ({ children }: { children: ReactNode }) => {
     return fileContent;
   };
 
+  const createEmptyFile = async (uri: DocumentFileDetail["uri"]) => {
+    const newFile = await createFile(uri);
+    return newFile;
+  };
+
+  //this overwrites the old data
+  const editFile = async (uri: DocumentFileDetail["uri"], data: string) => {
+    await writeFile(uri, data);
+  };
+
   return (
     <FsContext.Provider
       value={{
@@ -89,6 +112,9 @@ export const FsProvider = ({ children }: { children: ReactNode }) => {
         readFolderContent,
         getFile,
         readFileContent,
+        createEmptyFile,
+        editFile,
+        createFolder,
       }}
     >
       {children}
