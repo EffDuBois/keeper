@@ -23,7 +23,7 @@ export default function Index() {
       <Text className="text-2xl font-bold mx-12 my-8 text-foreground">
         Notes
       </Text>
-      <ItemList noGap foldersAndFiles={files} />
+      <ItemList foldersAndFiles={files} />
     </ScrollView>
   );
 }
