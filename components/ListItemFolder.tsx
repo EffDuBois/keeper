@@ -12,6 +12,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import ListItem from "./buttons/ListItem";
 
 export default function ListItemFolder({ file }: { file: DocumentFileDetail }) {
   const Fs = useFs();
@@ -42,12 +43,8 @@ export default function ListItemFolder({ file }: { file: DocumentFileDetail }) {
 
   return (
     <View className="flex items-start">
-      <Pressable
-        onPress={onItemPress}
-        className={"py-3 mx-6 px-2 flex flex-row"}
-      >
+      <ListItem title={file.name} onPress={onItemPress}>
         <View className="relative">
-          <Text className="text-md font-bold text-foreground">{file.name}</Text>
           <Animated.View style={IconStyle} className=" absolute -left-6">
             <Feather
               name="chevron-right"
@@ -57,7 +54,7 @@ export default function ListItemFolder({ file }: { file: DocumentFileDetail }) {
             />
           </Animated.View>
         </View>
-      </Pressable>
+      </ListItem>
       <Animated.View
         style={viewStyle}
         className="border-l border-foreground ml-[1.3rem] overflow-hidden"

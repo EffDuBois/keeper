@@ -2,6 +2,7 @@ import { useFs } from "@/utils/Fs/Fs";
 import { useRouter } from "expo-router";
 import { Pressable, Text } from "react-native";
 import { DocumentFileDetail } from "react-native-saf-x";
+import ListItem from "./buttons/ListItem";
 
 export default function ListItemFile({ file }: { file: DocumentFileDetail }) {
   const router = useRouter();
@@ -12,9 +13,5 @@ export default function ListItemFile({ file }: { file: DocumentFileDetail }) {
       params: { id: file.uri, uri: file.uri },
     });
   };
-  return (
-    <Pressable onPress={onItemPress} className="py-3 mx-6 px-2 flex flex-row">
-      <Text className="text-md font-bold text-foreground">{file.name}</Text>
-    </Pressable>
-  );
+  return <ListItem onPress={onItemPress} title={file.name} />;
 }
