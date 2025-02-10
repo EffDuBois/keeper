@@ -1,3 +1,4 @@
+import ActionBar from "@/components/ActionBar";
 import ItemList from "@/components/ItemList";
 import FolderListItem from "@/components/ListItemFolder";
 import { useFs } from "@/utils/Fs/Fs";
@@ -19,11 +20,14 @@ export default function Index() {
   }, [fs.rootFolder?.uri]);
 
   return (
-    <ScrollView className="flex bg-background">
-      <Text className="text-2xl font-bold mx-12 my-8 text-foreground">
-        Notes
-      </Text>
-      <ItemList foldersAndFiles={files} />
-    </ScrollView>
+    <>
+      <ScrollView className="flex bg-background">
+        <Text className="text-2xl font-bold mx-12 my-8 text-foreground">
+          Notes
+        </Text>
+        <ItemList foldersAndFiles={files} />
+      </ScrollView>
+      <ActionBar />
+    </>
   );
 }

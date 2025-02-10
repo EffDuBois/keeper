@@ -7,6 +7,10 @@ module.exports = {
       colors: {
         foreground: "var(--color-foreground)",
         background: "var(--color-background)",
+        'navui-foreground': "var(--color-navui-foreground)",
+        'navui-background': "var(--color-navui-background)",
+        'primary-foreground': "#007bff", // blue
+        'primary-background': "#e7f1ff", // light blue
       },
     },
   },
