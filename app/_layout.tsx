@@ -1,11 +1,11 @@
 import { Stack } from "expo-router";
 
 import "../global.css";
-import Theme from "@/utils/themes";
+import Theme from "@/lib/themes";
 import { TextStyle, View, ViewStyle } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { cssInterop } from "nativewind";
-import { FsProvider } from "@/utils/Fs/Fs";
+import { FsProvider } from "@/lib/Fs/Fs";
 
 interface StackProps extends React.ComponentProps<typeof Stack> {
   headerStyle?: TextStyle;
