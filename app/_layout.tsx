@@ -5,7 +5,8 @@ import Theme from "@/lib/themes";
 import { TextStyle, View, ViewStyle } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { cssInterop } from "nativewind";
-import { FsProvider } from "@/lib/Fs/Fs";
+import { Provider } from "react-redux";
+import { store } from "@/redux/store";
 
 interface StackProps extends React.ComponentProps<typeof Stack> {
   headerStyle?: TextStyle;
@@ -29,7 +30,7 @@ export const StyledStack = cssInterop(StackImpl, {
 
 export default function RootLayout() {
   return (
-    <FsProvider>
+    <Provider store={store}>
       <Theme name="default">
         <StatusBar style="auto" />
         <View className="flex-1 bg-background">
@@ -42,6 +43,6 @@ export default function RootLayout() {
           />
         </View>
       </Theme>
-    </FsProvider>
+    </Provider>
   );
 }

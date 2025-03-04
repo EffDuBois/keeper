@@ -16,7 +16,10 @@ export default function Index() {
       const freshFiles = await fs.getRootFolderContent();
       setFiles(freshFiles);
     };
+    const unsubscribe = fs.subscribeToNoteList(fetchNotes);
     fetchNotes();
+
+    return unsubscribe;
   }, [fs.rootFolder?.uri]);
 
   return (
