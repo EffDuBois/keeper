@@ -1,11 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
 import {
   createFile,
   DocumentFileDetail,
@@ -18,6 +11,8 @@ import {
   writeFile,
 } from "react-native-saf-x";
 
+const ROOT_FOLDER_KEY = "root_path";
+
 export const getRootFolder = async () => {
   try {
     const storedFolderUri = await AsyncStorage.getItem(ROOT_FOLDER_KEY);
@@ -27,54 +22,29 @@ export const getRootFolder = async () => {
       if (storedFolder) {
         return storedFolder;
       }
-    } else {
-      console.log("FS-init: No stored folder found, picking new folder");
-      const newFolder = await openDocumentTree(true);
-      if (newFolder) {
-        AsyncStorage.setItem(ROOT_FOLDER_KEY, newFolder.uri);
-        return newFolder;
-      }
     }
+    console.log("No stored folder found, picking new folder");
+    const newFolder = await openDocumentTree(true);
+    if (newFolder) {
+      AsyncStorage.setItem(ROOT_FOLDER_KEY, newFolder.uri);
+      return newFolder;
+    }
+    throw Error("Folder Selection Cancelled");
   } catch (error) {
-    console.error("FS-init: Error getting root folder:", error);
+    throw Error(`Error getting root folder: ${error}`);
   }
 };
 
-interface FsContextProps {
-  rootFolder: DocumentFileDetail | undefined;
-  getRootFolderContent: () => Promise<DocumentFileDetail[] | undefined>;
-  readFolderContent: (
-    uri: DocumentFileDetail["uri"]
-  ) => Promise<DocumentFileDetail[]>;
-  getFile: (uri: DocumentFileDetail["uri"]) => Promise<DocumentFileDetail>;
-  readFileContent: (uri: DocumentFileDetail["uri"]) => Promise<string>;
-  createEmptyFile: (
-    uri: DocumentFileDetail["uri"]
-  ) => Promise<DocumentFileDetail>;
-  editFile: (uri: DocumentFileDetail["uri"], data: string) => Promise<void>;
-  createFolder: (uri: DocumentFileDetail["uri"]) => Promise<DocumentFileDetail>;
-  subscribeToNoteList: (subscriberCallback: Function) => () => void;
-}
-
-const FsContext = createContext<FsContextProps | undefined>(undefined);
-
-const ROOT_FOLDER_KEY = "root_path";
-
-const [rootFolder, setRootFolder] = useState<DocumentFileDetail | undefined>();
-
-const getRootFolderContent = async () => {
+export const getRootFolderContent = async (rootFolder: DocumentFileDetail) => {
   try {
-    if (rootFolder) {
-      const rootFiles = await listFiles(rootFolder?.uri);
-      return rootFiles;
-    }
+    const rootFiles = await listFiles(rootFolder?.uri);
+    return rootFiles;
   } catch (error) {
-    console.error("Error getting root folder content:", error);
-    return [];
+    throw Error(`Error getting root folder content: ${error}`);
   }
 };
 
-const readFolderContent = async (uri: DocumentFileDetail["uri"]) => {
+export const readFolderContent = async (uri: DocumentFileDetail["uri"]) => {
   try {
     const folderFiles = await listFiles(uri);
     return folderFiles;
@@ -84,7 +54,7 @@ const readFolderContent = async (uri: DocumentFileDetail["uri"]) => {
   }
 };
 
-const createFolder = async (uri: DocumentFileDetail["uri"]) => {
+export const createFolder = async (uri: DocumentFileDetail["uri"]) => {
   try {
     const newFolder = await mkdir(uri);
     return newFolder;
@@ -94,7 +64,7 @@ const createFolder = async (uri: DocumentFileDetail["uri"]) => {
   }
 };
 
-const getFile = async (uri: DocumentFileDetail["uri"]) => {
+export const getFile = async (uri: DocumentFileDetail["uri"]) => {
   try {
     const file = await stat(uri);
     return file;
@@ -104,7 +74,7 @@ const getFile = async (uri: DocumentFileDetail["uri"]) => {
   }
 };
 
-const readFileContent = async (uri: DocumentFileDetail["uri"]) => {
+export const readFileContent = async (uri: DocumentFileDetail["uri"]) => {
   try {
     const fileContent = await readFile(uri);
     return fileContent;
@@ -114,7 +84,7 @@ const readFileContent = async (uri: DocumentFileDetail["uri"]) => {
   }
 };
 
-const createEmptyFile = async (uri: DocumentFileDetail["uri"]) => {
+export const createEmptyFile = async (uri: DocumentFileDetail["uri"]) => {
   try {
     const newFile = await createFile(uri);
     return newFile;
@@ -124,20 +94,14 @@ const createEmptyFile = async (uri: DocumentFileDetail["uri"]) => {
   }
 };
 
-//this overwrites the old data
-const editFile = async (uri: DocumentFileDetail["uri"], data: string) => {
+export const editFile = async (
+  uri: DocumentFileDetail["uri"],
+  data: string
+) => {
   try {
     await writeFile(uri, data);
   } catch (error) {
     console.error("Error editing file:", error);
     throw error;
   }
-};
-
-export const useFs = () => {
-  const context = useContext(FsContext);
-  if (context === undefined) {
-    throw new Error("useFs must be used within a FsProvider");
-  }
-  return context;
 };

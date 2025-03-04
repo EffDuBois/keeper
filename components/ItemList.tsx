@@ -2,10 +2,6 @@ import { DocumentFileDetail } from "react-native-saf-x";
 import ListItemFolder from "./ListItemFolder";
 import ListItemFile from "./ListItemFile";
 import { ViewProps } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-} from "react-native-reanimated";
 
 interface ItemListProps extends ViewProps {
   foldersAndFiles: DocumentFileDetail[] | undefined;

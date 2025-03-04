@@ -1,5 +1,3 @@
-import { useFs } from "@/lib/Fs/Fs";
-import { checkIfFolder, readFileName } from "@/utils/Fs/utils";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
@@ -9,20 +7,18 @@ import ItemList from "./ItemList";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 import ListItem from "./buttons/ListItem";
+import { readFolderContent } from "@/lib/Fs/Fs";
 
 export default function ListItemFolder({ file }: { file: DocumentFileDetail }) {
-  const Fs = useFs();
-
   const height = useSharedValue(0);
 
   const [files, setFiles] = useState<DocumentFileDetail[]>([]);
 
   const onItemPress = async () => {
-    const freshFiles = await Fs.readFolderContent(file.uri);
+    const freshFiles = await readFolderContent(file.uri);
     setFiles(freshFiles);
     //based on height, both the drawer opens and the icon rotates
     height.value === 0 ? height.set(10000) : height.set(0);
@@ -36,7 +32,10 @@ export default function ListItemFolder({ file }: { file: DocumentFileDetail }) {
   const IconStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        rotate: height.value === 0 ? withTiming("0deg") : withTiming("90deg"),
+        rotate:
+          height.value === 0
+            ? withTiming("0deg", { duration: 380 })
+            : withTiming("90deg"),
       },
     ],
   }));

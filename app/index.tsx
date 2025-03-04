@@ -1,26 +1,19 @@
 import ActionBar from "@/components/ActionBar";
 import ItemList from "@/components/ItemList";
 import FolderListItem from "@/components/ListItemFolder";
-import { useFs } from "@/lib/Fs/Fs";
+import { initFs, selectRootFiles } from "@/lib/Fs/fsSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { DocumentFileDetail } from "react-native-saf-x";
 
 export default function Index() {
-  const fs = useFs();
-
-  const [files, setFiles] = useState<DocumentFileDetail[] | undefined>();
+  const dispatch = useAppDispatch();
+  const files = useAppSelector(selectRootFiles);
 
   useEffect(() => {
-    const fetchNotes = async () => {
-      const freshFiles = await fs.getRootFolderContent();
-      setFiles(freshFiles);
-    };
-    const unsubscribe = fs.subscribeToNoteList(fetchNotes);
-    fetchNotes();
-
-    return unsubscribe;
-  }, [fs.rootFolder?.uri]);
+    dispatch(initFs());
+  }, [dispatch]);
 
   return (
     <>
