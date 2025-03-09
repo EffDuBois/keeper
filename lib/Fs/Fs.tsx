@@ -35,12 +35,12 @@ export const getRootFolder = async () => {
   }
 };
 
-export const getRootFolderContent = async (rootFolder: DocumentFileDetail) => {
+export const getFolderContent = async (folder: DocumentFileDetail) => {
   try {
-    const rootFiles = await listFiles(rootFolder?.uri);
+    const rootFiles = await listFiles(folder.uri);
     return rootFiles;
   } catch (error) {
-    throw Error(`Error getting root folder content: ${error}`);
+    throw Error(`Error getting folder ${folder.uri} content: ${error}`);
   }
 };
 
@@ -84,12 +84,33 @@ export const readFileContent = async (uri: DocumentFileDetail["uri"]) => {
   }
 };
 
-export const createEmptyFile = async (uri: DocumentFileDetail["uri"]) => {
+export const createEmptyFileAtDir = async (uri: DocumentFileDetail["uri"]) => {
+  const filesInDir = await readFolderContent(uri);
+  let latestFileNumber = 0;
+
+  filesInDir?.forEach((file) => {
+    const match = file.uri.match(/.*\/Untitled (\d+).md/);
+    if (match && match[1]) {
+      const fileNumber = parseInt(match[1], 10);
+      if (fileNumber >= latestFileNumber) {
+        latestFileNumber = fileNumber + 1;
+      }
+    } else {
+      const match = file.uri.match(/.*\/Untitled.md/);
+      if (match) {
+        latestFileNumber = 1;
+      }
+    }
+  });
   try {
-    const newFile = await createFile(uri);
+    let newFile;
+    latestFileNumber === 0
+      ? (newFile = await createFile(`${uri}/Untitled.md`))
+      : (newFile = await createFile(`${uri}/Untitled ${latestFileNumber}.md`));
+    console.log(`created file named Untitled ${newFile?.name}`);
     return newFile;
   } catch (error) {
-    console.error("Error creating file:", error);
+    console.error(error);
     throw error;
   }
 };

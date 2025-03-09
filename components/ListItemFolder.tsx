@@ -2,7 +2,7 @@ import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { DocumentFileDetail } from "react-native-saf-x";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ItemList from "./ItemList";
 import Animated, {
   useAnimatedStyle,
@@ -12,14 +12,24 @@ import Animated, {
 import ListItem from "./buttons/ListItem";
 import { readFolderContent } from "@/lib/Fs/Fs";
 
-export default function ListItemFolder({ file }: { file: DocumentFileDetail }) {
+export default function ListItemFolder({
+  folder,
+}: {
+  folder: DocumentFileDetail;
+}) {
   const height = useSharedValue(0);
 
   const [files, setFiles] = useState<DocumentFileDetail[]>([]);
+// this assumes that updating the rootFiles state will trigger a re-render down here
+  useEffect(() => {
+    const fetchFiles = async () => {
+      const files = await readFolderContent(folder.uri);
+      setFiles(files);
+    };
+    fetchFiles();
+  }, [folder.uri]);
 
   const onItemPress = async () => {
-    const freshFiles = await readFolderContent(file.uri);
-    setFiles(freshFiles);
     //based on height, both the drawer opens and the icon rotates
     height.value === 0 ? height.set(10000) : height.set(0);
   };
@@ -42,7 +52,13 @@ export default function ListItemFolder({ file }: { file: DocumentFileDetail }) {
 
   return (
     <View className="flex items-start">
-      <ListItem title={file.name} onPress={onItemPress}>
+      <ListItem
+        title={folder.name}
+        onPress={onItemPress}
+        onLongPress={() => {
+          //TODO: implement drawer options
+        }}
+      >
         <View className="relative">
           <Animated.View style={IconStyle} className=" absolute -left-6">
             <Feather

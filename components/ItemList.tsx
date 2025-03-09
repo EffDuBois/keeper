@@ -13,7 +13,7 @@ export default function ItemList({ foldersAndFiles }: ItemListProps) {
   return (
     <>
       {folders?.map((item) => (
-        <ListItemFolder file={item} key={item.uri} />
+        <ListItemFolder folder={item} key={item.uri} />
       ))}
       {files?.map((item) => (
         <ListItemFile file={item} key={item.uri} />
